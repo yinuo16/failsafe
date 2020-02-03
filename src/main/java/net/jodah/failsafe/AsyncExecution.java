@@ -45,11 +45,11 @@ public final class AsyncExecution extends AbstractExecution {
     this.future = (FailsafeFuture<Object>) future;
   }
 
-  void inject(Supplier<CompletableFuture<ExecutionResult>> supplier, boolean asyncExecution) {
+  void inject(Supplier<CompletableFuture<ExecutionResult>> syncSupplier, boolean asyncExecution) {
     if (!asyncExecution) {
-      outerExecutionSupplier = supplier;
+      outerExecutionSupplier = Functions.getPromiseAsync(syncSupplier, scheduler, future);
     } else {
-      outerExecutionSupplier = innerExecutionSupplier = Functions.toSettableSupplier(supplier);
+      outerExecutionSupplier = innerExecutionSupplier = Functions.toSettableSupplier(syncSupplier);
     }
 
     for (PolicyExecutor<Policy<Object>> policyExecutor : policyExecutors)
@@ -180,9 +180,9 @@ public final class AsyncExecution extends AbstractExecution {
    * @param asyncExecution whether this is a detached, async execution that must be manually completed
    */
   @SuppressWarnings("unchecked")
-  void executeAsync(boolean asyncExecution) {
+  void execute(boolean asyncExecution) {
     if (!asyncExecution)
-      Functions.getPromiseAsync(outerExecutionSupplier, scheduler, future).get().whenComplete(this::complete);
+      outerExecutionSupplier.get().whenComplete(this::complete);
     else
       future.inject((Future) scheduler.schedule(innerExecutionSupplier::get, 0, TimeUnit.NANOSECONDS));
   }

@@ -408,7 +408,7 @@ public class FailsafeExecutor<R> extends PolicyListeners<FailsafeExecutor<R>, R>
     AsyncExecution execution = new AsyncExecution(scheduler, future, this);
     future.inject(execution);
     execution.inject(supplierFn.apply(execution), asyncExecution);
-    execution.executeAsync(asyncExecution);
+    execution.execute(asyncExecution);
     return future;
   }
 }
