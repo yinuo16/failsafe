@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-package net.jodah.failsafe.util;
+package net.jodah.failsafe.internal;
 
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-
 @Test
-public class RatioTest {
-  public void shouldHandleZero() {
-    assertEquals(new Ratio(10, 0).getValue(), 0.0);
-  }
+public abstract class CircuitStatsTest<T extends CircuitStats> {
+  T stats;
+
+  abstract T stats(int size);
 }

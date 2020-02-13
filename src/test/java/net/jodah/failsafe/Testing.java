@@ -79,9 +79,9 @@ public class Testing {
     try {
       stateField = CircuitBreaker.class.getDeclaredField("state");
       stateField.setAccessible(true);
-      return (T) ((AtomicReference<T>) stateField.get(breaker)).get();
+      return ((AtomicReference<T>) stateField.get(breaker)).get();
     } catch (Exception e) {
-      return null;
+      throw new IllegalStateException("Could not get circuit breaker state");
     }
   }
 
